@@ -9,7 +9,7 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.3.1/631629214272c316ec66e453fde42638392144fa/spring-boot-configuration-processor-3.3.1.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
         </processorPath>
-        <module name="backend.main" />
+        <module name="com.codevillain.backend.main" />
       </profile>
     </annotationProcessing>
   </component>
