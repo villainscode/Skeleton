@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>체크박스 예제</h2>
+    <h1>체크박스 예제</h1>
     <input type="checkbox" id="testCheckbox" v-model="checked">
     <label for="testCheckbox">{{ checked ? '선택됨' : '선택되지 않음' }}</label>
     <p>체크박스 상태: {{ checked }}</p>

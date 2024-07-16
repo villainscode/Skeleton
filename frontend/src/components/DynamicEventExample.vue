@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>동적 이벤트 바인딩 예제</h2>
+    <h1>동적 이벤트 바인딩 예제</h1>
 
     <select v-model="selectedEvent">
       <option value="click">Click</option>

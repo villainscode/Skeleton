@@ -1,4 +1,5 @@
 <template>
+  <h1>Vue.js hello greeting</h1>
   <div>
     <input v-model="name" @kayup.enter="sendGreeting" placeholder="Enter your name(이름)">
     <button @click="sendGreeting">인사하기</button>

@@ -2,6 +2,7 @@
 
 This template should help get you started developing with Vue 3 in Vite.
 
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
@@ -14,6 +15,13 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ```sh
 npm install
+```
+
+### 사용 라이브러리 
+```sh
+npm install axios
+
+npm install vue-router 
 ```
 
 ### Compile and Hot-Reload for Development

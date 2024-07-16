@@ -1,0 +1,39 @@
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.modal-dialog {
+    max-width: 400px;
+}
+.social-btn {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+}
+.google-btn {
+    background-color: #ffffff;
+    color: #757575;
+    border: 1px solid #dadce0;
+}
+.kakao-btn {
+    background-color: #FEE500;
+    color: #000000;
+}
+.naver-btn {
+    background-color: #03C75A;
+    color: #ffffff;
+}
+.signup-btn {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+.auto-login-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
