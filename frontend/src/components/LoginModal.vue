@@ -87,6 +87,10 @@ export default {
     signup() {
       console.log('회원가입 시도');
       // 회원가입 로직을 여기에 추가하세요
+    },
+    goToSignup() {
+      this.$emit('close'); // 모달 닫기
+      this.$router.push('/signup'); // 회원가입 페이지로 이동
     }
   }
 }

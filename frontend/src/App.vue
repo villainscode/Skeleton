@@ -35,6 +35,10 @@ export default {
     hideLoginModal() {
       this.isLoginModalVisible = false
       document.body.style.overflow = 'auto' // 배경 스크롤 복원
+    },
+    goToSignup() {
+      this.hideLoginModal(); // 모달을 닫고
+      this.$router.push('/signup'); // 회원가입 페이지로 이동
     }
   }
 }
