@@ -1,20 +1,25 @@
 <template>
   <div class="modal-overlay" @click.self="$emit('close')">
     <div class="modal-container">
-      <div class="modal-content">
-        <button class="close-btn" @click="$emit('close')">X</button>
+      <button class="close-btn" @click.stop="$emit('close')">
+        <i class="fas fa-times"></i>
+      </button>
 
+      <div class="modal-content">
         <div class="modal-body">
           <h2 class="text-center mb-4">로그인</h2>
           <form @submit.prevent="handleSubmit">
             <div class="mb-3">
               <label for="email" class="form-label">이메일</label>
-              <input type="email" class="form-control" id="email" v-model="email" required :class="{ 'is-invalid': emailError }">
+              <div class="input-group">
+                <input type="email" class="form-control" id="email" v-model="email" required :class="{ 'is-invalid': emailError }"></div>
               <div class="invalid-feedback">{{ emailError }}</div>
             </div>
             <div class="mb-3">
               <label for="password" class="form-label">비밀번호</label>
-              <input type="password" class="form-control" id="password" v-model="password" required :class="{ 'is-invalid': passwordError }">
+              <div class="input-group">
+                <input type="password" class="form-control" id="password" v-model="password" required :class="{ 'is-invalid': passwordError }">
+              </div>
               <div class="invalid-feedback">{{ passwordError }}</div>
             </div>
             <div class="mb-4 form-check">
@@ -27,7 +32,7 @@
             </div>
 
           </form>
-          <hr>
+          <hr class="separator">
           <div class="text-center">
             <p>소셜 계정으로 로그인</p>
             <button v-for="btn in socialButtons" :key="btn.name" :class="['social-btn', btn.class]" @click="socialLogin(btn.name)">
@@ -97,6 +102,8 @@ export default {
 </script>
 
 <style scoped>
+@import '@fortawesome/fontawesome-free/css/all.css';
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -111,15 +118,15 @@ export default {
 }
 
 .modal-container {
-  background-color: white;
-  border-radius: 8px;
-  max-width: 400px;
+  background-color: #fff;
+  border-radius: 10px;
+  max-width: 450px;
   width: calc(100% - 40px); /* 양쪽 20px씩 여백 */
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   position: relative; /* X 버튼 위치 조정을 위해 추가 */
+  z-index: 1001;
 }
-
 
 .modal-content {
   padding: 20px;
@@ -139,8 +146,27 @@ export default {
 .form-control {
   width: 100%;
   padding: 10px;
-  margin-top: 5px;
-  box-sizing: border-box; /* 추가: padding과 border를 포함하도록 */
+  box-sizing: border-box;
+  height: 2.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 1.0rem; /* 폰트 크기를 크게 조정 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 바깥쪽으로 그림자 효과 */
+  background-color: #f8f9fa;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.25); /* 포커스 시 그림자와 테두리 색상 변경 */
+  outline: none;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-bottom: 1rem;
 }
 
 .mb-3 {
@@ -186,15 +212,19 @@ export default {
   right: 10px;
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   cursor: pointer;
-  color: black; /* 버튼 색상을 명확히 지정 */
+  color: #6c757d;
+  opacity: 0.5;
+  transition: opacity 0.15s ease-in-out;
+  z-index: 1002;
 }
 
 .btn {
   padding: 10px;
   font-size: 16px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .btn-primary {
@@ -242,7 +272,11 @@ export default {
   background-color: #6c757d;
   color: #ffffff;
 }
-
+.separator {
+  border: 0;
+  border-top: 2px solid #87a5c4;
+  margin: 1rem 0;
+}
 
 
 </style>

@@ -22,6 +22,9 @@ npm install
 npm install axios
 
 npm install vue-router 
+
+npm install @fortawesome/fontawesome-free
+
 ```
 
 ### Compile and Hot-Reload for Development
