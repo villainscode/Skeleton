@@ -9,7 +9,7 @@
           <h2 class="text-center mb-3">회원 가입</h2>
           <form @submit.prevent="handleSubmit">
 
-            <div class="form-group mb-3 d-flex align-items-center">
+            <div class="form-group d-flex align-items-center">
               <label for="email" class="form-label me-2">이메일</label>
               <div class="input-group flex-grow-1">
                 <i class="fas fa-envelope input-icon"></i>
@@ -18,55 +18,69 @@
                        data-placeholder="해당 메일로 인증 코드를 전송합니다"
                        @focus="clearPlaceholder"
                        @blur="validateEmailOnBlur"
-                       ref="emailInput">
+                       :class="{ 'is-invalid': emailError }">
               </div>
             </div>
-
-            <div class="form-group mb-3 d-flex align-items-center">
+            <div v-if="emailError" class="error-message">{{ emailError }}</div>
+            <div class="form-group d-flex align-items-center">
               <label for="name" class="form-label me-2">이름</label>
               <div class="input-group flex-grow-1">
                 <i class="fas fa-user input-icon"></i>
-                <input type="text" class="form-control" id="name" v-model="name" ref="nameInput">
+                <input type="text" class="form-control"
+                       id="name"
+                       v-model="name"
+                       :class="{ 'is-invalid': nameError }">
               </div>
             </div>
-            <div class="form-group mb-3 d-flex align-items-center">
+            <div v-if="nameError" class="error-message">{{ nameError }}</div>
+            <div class="form-group d-flex align-items-center">
               <label for="password" class="form-label me-2">비밀번호</label>
               <div class="input-group flex-grow-1">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" class="form-control" id="password" v-model="password" ref="passwordInput">
+                <input type="password" class="form-control" id="password" v-model="password" :class="{ 'is-invalid': passwordError }">
               </div>
             </div>
+            <div v-if="passwordError" class="error-message">{{ passwordError }}</div>
 
-            <div class="form-group mb-3 d-flex align-items-center">
+            <div class="form-group d-flex align-items-center">
               <label for="confirmPassword" class="form-label me-2">비밀번호 확인</label>
               <div class="input-group flex-grow-1">
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" class="form-control" id="confirmPassword" v-model="confirmPassword" ref="confirmPasswordInput">
+                <input type="password" class="form-control" id="confirmPassword" v-model="confirmPassword" :class="{ 'is-invalid': confirmPasswordError }">
               </div>
             </div>
+            <div v-if="confirmPasswordError" class="error-message">{{ confirmPasswordError }}</div>
 
-            <div class="form-group mb-3 d-flex align-items-center">
+            <div class="form-group d-flex align-items-center">
               <label for="phone" class="form-label me-2">전화번호</label>
               <div class="input-group flex-grow-1">
                 <i class="fas fa-phone input-icon"></i>
-                <input type="text" class="form-control" id="phone" v-model="phone" placeholder="01012345678" data-placeholder="01012345678" maxlength="11" @focus="clearPlaceholder" @blur="restorePlaceholder" ref="phoneInput">
+                <input type="text" class="form-control" id="phone" v-model="phone"
+                       placeholder="01012345678"
+                       data-placeholder="01012345678"
+                       maxlength="11"
+                       @input="validatePhoneInput"
+                       @focus="clearPlaceholder"
+                       @blur="restorePlaceholder" :class="{ 'is-invalid': phoneError }">
               </div>
             </div>
+            <div v-if="phoneError" class="error-message">{{ phoneError }}</div>
 
             <hr class="separator">
             <div class="form-group mb-2">
               <label for="terms" class="form-label">약관 동의</label>
             </div>
-            <div class="form-group mb-4">
+            <div class="form-group mb-2">
               <textarea id="terms" readonly class="form-control terms">[개인정보 동의 및 사이트 가입 동의 내용]</textarea>
             </div>
 
             <div class="form-group mb-2">
               <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="agreeTerms" v-model="agreeTerms">
+                <input type="checkbox" class="form-check-input" id="agreeTerms" v-model="agreeTerms" :class="{ 'is-invalid': agreeTermsError }">
                 <label class="form-check-label" for="agreeTerms">약관에 동의합니다</label>
               </div>
             </div>
+            <div v-if="agreeTermsError" class="error-message">{{ agreeTermsError }}</div>
 
             <div class="d-flex justify-content-between mb-3">
               <button type="submit" class="btn btn-primary flex-fill me-1">가입 완료</button>
@@ -77,119 +91,133 @@
       </div>
     </div>
   </div>
-
-  <!-- 알림 모달 -->
-  <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="alertModalLabel">알림</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          {{ alertMessage }}
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" @click="closeAlertModal">확인</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 
 <script>
-import { Modal } from 'bootstrap'
+import axios from "axios";
+
+const REGEX = {
+  KOREAN: /^[가-힣]+$/,
+  ENGLISH: /^[a-zA-Z]{3,}$/,
+  PASSWORD: /^(?=.*[A-Za-z])|(?=.*[A-Za-z])(?=.*\d)|(?=.*[A-Za-z])(?=.*[@$!%*?&])|(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])|(?=.*\d)(?=.*[@$!%*?&]).{6,}$/,
+  PHONE: /^(01[016789])\d{7,8}$/,
+  EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+};
+
+const ERROR_MESSAGES = {
+  NAME: '이름은 한글 두글자 혹은 영문 세글자 이상 입력해주세요.',
+  PASSWORD: '비밀번호는 6자리 이상(숫자,특수문자 가능) 입력해주세요.',
+  CONFIRM_PASSWORD: '비밀번호가 일치하지 않습니다.',
+  PHONE: '전화번호는 11자리 숫자여야 합니다.',
+  AGREE_TERMS: '약관에 동의해주세요.',
+  EMAIL: '유효한 이메일 주소를 입력해주세요.'
+};
+
 
 export default {
   data() {
     return {
       email: '',
+      emailError: '',
       name: '',
+      nameError: '',
       password: '',
+      passwordError: '',
       confirmPassword: '',
+      confirmPasswordError: '',
       phone: '',
+      phoneError: '',
       agreeTerms: false,
-      alertMessage: '',
-      focusField: null,
-      modal: null
+      agreeTermsError: ''
     }
   },
-  mounted() {
-    this.modal = new Modal(document.getElementById('alertModal'))
-  },
   methods: {
-    showAlert(message, field) {
-      this.alertMessage = message
-      this.focusField = field
-      this.modal.show()
-    },
-    closeAlertModal() {
-      this.modal.hide()
-      if (this.focusField) {
-        this.$nextTick(() => {
-          this.$refs[this.focusField].focus()
-        })
+    validateField(field, value, regex, errorMessage) {
+      if (!regex.test(value)) {
+        this[`${field}Error`] = errorMessage;
+        return false;
       }
+      this[`${field}Error`] = '';
+      return true;
     },
     validateEmail() {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
-      if (!emailRegex.test(this.email)) {
-        this.showAlert('유효한 이메일 주소를 입력해주세요.', 'emailInput')
-        return false
-      }
-      return true
+      return this.validateField('email', this.email, REGEX.EMAIL, ERROR_MESSAGES.EMAIL);
     },
     validateEmailOnBlur(event) {
-      this.restorePlaceholder(event);
       this.validateEmail();
     },
     validateName() {
-      const koreanRegex = /^[가-힣]+$/
-      const englishRegex = /^[a-zA-Z]{2,}$/
-      const nameAlert = '이름은 한글 또는 영문으로 두 글자 이상 입력해주세요.'
-      if (this.name.length == '') {
-        this.showAlert(nameAlert, 'nameInput')
-        return false
+      console.log("validateName");
+      if (this.name.length == '' || this.name.length === 0) {
+        this.nameError = ERROR_MESSAGES.NAME;
+        return false;
+      } else {
+        const resultKorean = this.validateField('name', this.name, REGEX.KOREAN, ERROR_MESSAGES.NAME);
+        const resultEnglish = this.validateField('name', this.name, REGEX.ENGLISH, ERROR_MESSAGES.NAME);
+        const result = resultKorean || resultEnglish;
+
+        if (!result) {
+          this.nameError = ERROR_MESSAGES.NAME;
+          return false;
+        }
+        this.nameError = '';
+        return true;
+      }
+    },
+    validatePassword() {
+      return this.validateField('password', this.password, REGEX.PASSWORD, ERROR_MESSAGES.PASSWORD);
+    },
+    validatePassConfirm() {
+      if (this.password !== this.confirmPassword) {
+        this.confirmPasswordError = ERROR_MESSAGES.CONFIRM_PASSWORD;
+        return false;
+      } else {
+        this.confirmPasswordError = '';
+        return true;
+      }
+    },
+    validatePhoneNumber() {
+      return this.validateField('phone', this.phone, REGEX.PHONE, ERROR_MESSAGES.PHONE);
+    },
+    validateAgree() {
+      if (!this.agreeTerms) {
+        this.agreeTermsError = ERROR_MESSAGES.AGREE_TERMS;
+        return false;
       }
 
-      if (!(koreanRegex.test(this.name) && this.name.length >= 1) &&
-          !(englishRegex.test(this.name) && this.name.length >= 2)) {
-        this.showAlert(nameAlert, 'nameInput')
-        return false
-      }
-      return true
+      this.agreeTermsError = '';
+      return true;
+    },
+    validatePhoneInput(event) {
+      this.phone = event.target.value.replace(/\D/g, '');
     },
 
-    handleSubmit() {
+    async handleSubmit() {
       if (!this.validateEmail()) return
       if (!this.validateName()) return
+      if (!this.validatePassword()) return
+      if (!this.validatePassConfirm()) return
+      if (!this.validatePhoneNumber()) return
+      if (!this.validateAgree()) return
 
-      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
-      if (!passwordRegex.test(this.password)) {
-        this.showAlert('비밀번호는 최소 8자리 이상이고 문자와 숫자의 조합이어야 합니다.', 'passwordInput')
-        return
-      }
-
-      if (this.password !== this.confirmPassword) {
-        this.showAlert('비밀번호가 일치하지 않습니다.', 'confirmPasswordInput')
-        return
-      }
-
-      const phoneRegex = /^\d{11}$/
-      if (!phoneRegex.test(this.phone)) {
-        this.showAlert('전화번호는 11자리 숫자여야 합니다.', 'phoneInput')
-        return
-      }
-      if (!this.agreeTerms) {
-        this.showAlert('약관에 동의해주세요.', 'agreeTermsInput')
-        return
+      const userRegister = {
+        email: this.email,
+        name: this.name,
+        password: this.password,
+        phone: this.phone
       }
       // 여기서 회원 가입 로직을 처리합니다.
+      try {
+        const response = await axios.post('/api/register', userRegister);
+        // 회원 가입 성공 시 추가 처리
+        console.log('서버 응답:', response.data);
+      } catch (error) {
+        console.error('회원 가입 중 오류 발생:', error);
+      }
       console.log('회원 가입 완료');
       this.$router.push('/');
     },
-
     cancel() {
       this.$emit('close');
       this.$router.push('/');
@@ -305,27 +333,6 @@ export default {
   color: #007bff;
 }
 
-.d-flex {
-  display: flex;
-}
-
-.justify-content-between {
-  justify-content: space-between;
-}
-
-.flex-fill {
-  flex: 1;
-}
-
-.me-1 {
-  margin-right: 0.5rem;
-}
-
-
-.ms-1 {
-  margin-left: 0.5rem;
-}
-
 .btn {
   padding: 10px;
   font-size: 16px;
@@ -371,15 +378,14 @@ export default {
   margin: 1rem 0;
 }
 
-.modal-dialog-centered {
-  display: flex;
-  align-items: center;
-  min-height: calc(100% - 1rem);
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+.is-invalid {
+  border-color: #dc3545;
 }
 
-@media (min-width: 576px) {
-  .modal-dialog-centered {
-    min-height: calc(100% - 3.5rem);
-  }
-}
 </style>
