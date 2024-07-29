@@ -96,6 +96,9 @@
 
 <script>
 import axios from "axios";
+import CryptoJS from 'crypto-js';
+
+const SECRET_KEY = '9fdfdc8392f4619e';
 
 const REGEX = {
   KOREAN: /^[가-힣]+$/,
@@ -201,12 +204,20 @@ export default {
       if (!this.validatePhoneNumber()) return
       if (!this.validateAgree()) return
 
+      // 비밀번호 암호화
+      const encryptedPassword = CryptoJS.AES.encrypt(this.password, CryptoJS.enc.Utf8.parse(SECRET_KEY), {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+      }).toString();
+
       const userRegister = {
         email: this.email,
         name: this.name,
-        password: this.password,
+        password: encryptedPassword,
         phone: this.phone
       }
+
+      console.log('# user = ' + userRegister.password);
       // 여기서 회원 가입 로직을 처리합니다.
       try {
         const response = await axios.post('/api/register', userRegister);

@@ -25,6 +25,8 @@ npm install vue-router
 
 npm install @fortawesome/fontawesome-free
 
+npm install crypto-js
+
 ```
 
 ### Compile and Hot-Reload for Development
